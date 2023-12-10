@@ -1,0 +1,32 @@
+on:
+  push:
+  pull_request:
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: DeterminateSystems/nix-installer-action@main
+        with:
+          diagnostic-endpoint: ""
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+        with:
+          diagnostic-endpoint: ""
+
+      - name: "Check evaluation"
+        run: nix flake check --no-build --all-systems
+
+      - name: "Run unit-tests"
+        run: nix run github:nix-community/nix-unit -- --flake .#tests
+
+      - name: "Do linting"
+        run: nix run nixpkgs#statix -- check .
+
+      - name: "Check formatting"
+        run: nix fmt -- --check .
+
+      - name: "Try building docs"
+        run: nix build .#docs
+
+      - name: "Try building example"
+        run: nix build ./example#octodns
