@@ -299,8 +299,8 @@ lib.mapAttrs
               description = lib.mdDoc ''
                 The canonical hostname of the machine providing the service.
               '';
-              example = "ftp://example.com/public";
-              type = lib.types.int;
+              example = "example.com";
+              type = with lib.types; nullOr str; # change str to lib.types.domain once it exists;
               apply = x: "${x}.";
             };
           };
