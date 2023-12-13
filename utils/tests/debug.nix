@@ -47,7 +47,7 @@ in
           cname = { data = [ "www.example.com" ]; ttl = 60; };
         };
         "_xmpp._tcp.example.org" = {
-          srv = { data = [ { port = 5223; priority = 10; weight = 5; target = "host1.example.com."; } ]; ttl = 60; };
+          srv = { data = [{ port = 5223; priority = 10; weight = 5; target = "host1.example.com."; }]; ttl = 60; };
         };
       };
     };
