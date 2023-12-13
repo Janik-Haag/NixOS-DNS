@@ -6,7 +6,7 @@
     It won't actually be used by anything.
     But the octodns bind module has a check for the validity of a zone-file
     and a zone-file MUST have a SOA record.
-    Anyways, octodns will just ignore it's existence and only sync supported records.
+    Anyways, octodns will just ignore its existence and only sync supported records.
 
     Type:
       utils.octodns.fakeSOA :: Attr -> Attr
@@ -55,7 +55,7 @@
       providers = {
         config = {
           class = "octodns_bind.ZoneFileSource";
-          # get's overwritten at the build step
+          # gets overwritten at the build step
           directory = null;
           # by default the files are supposed to be called `$zone.` this makes it so it's only `$zone`
           file_extension = "";

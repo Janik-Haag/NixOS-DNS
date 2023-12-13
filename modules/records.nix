@@ -51,14 +51,14 @@ lib.mapAttrs
   {
     a.common = {
       description = lib.mdDoc ''
-        Commonly used to map a name to a list of IPv4 address's.
+        Commonly used to map a name to a list of IPv4 addresses.
       '';
       example = "9.9.9.9";
       type = with lib.types; nullOr (coercedTo str (f: [ f ]) (listOf str)); # change me to lib.types.ipv4 once it exists
     };
     aaaa.common = {
       description = lib.mdDoc ''
-        Commonly used to map a name to a list of IPv6 address's.
+        Commonly used to map a name to a list of IPv6 addresses.
       '';
       example = "2620:fe::fe";
       type = with lib.types; nullOr (coercedTo str (f: [ f ]) (listOf str)); # change me to lib.types.ipv6 once it exists
@@ -136,7 +136,7 @@ lib.mapAttrs
     dname = {
       common = {
         description = lib.mdDoc ''
-          Same as cname but also get's applied to any subdomain of the given domain
+          Same as cname but also gets applied to any subdomain of the given domain
         '';
         example = "foo.example.com";
         type = with lib.types; nullOr str; # change str to lib.types.domain once it exists
@@ -209,7 +209,7 @@ lib.mapAttrs
               };
               serial = lib.mkOption {
                 description = lib.mdDoc ''
-                  A zone serial number is a version number for the SOA record (the higher the newer). When the serial number changes in a zone file, this alerts secondary nameservers that they should update their copies of the zone file via a zone transfer. Usually most dns-utiltiltys working with zonefiles increment it automatically.
+                  A zone serial number is a version number for the SOA record (the higher the newer). When the serial number changes in a zone file, this alerts secondary nameservers that they should update their copies of the zone file via a zone transfer. Usually most dns-utilities working with zonefiles increment it automatically.
                 '';
                 example = "";
                 type = lib.types.int;

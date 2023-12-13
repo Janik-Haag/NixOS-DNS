@@ -17,7 +17,7 @@ all of these are in the projects nix devshell so just run `nix develop` or `dire
 
 Uses the same module system as nixpkgs.
 Documentation builds fail if any description field is empty, so be sure to add one.
-If a default module value is not a primary data type but tries to evalute a function add the defaultText string,
+If a default module value is not a primary data type but tries to evaluate a function add the defaultText string,
 otherwise documentation builds will fail.
 
 Please document breaking changes in the `CHANGELOG.md`

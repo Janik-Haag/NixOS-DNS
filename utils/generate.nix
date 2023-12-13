@@ -47,7 +47,7 @@ in
         manager = { };
       }
     ```
-    Everything except for dnsConfig is a 1:1 map of the octodns config yaml described in there docs.
+    Everything except for dnsConfig is a 1:1 map of the octodns config yaml described in their docs.
   */
   octodnsConfig =
     # The required config
