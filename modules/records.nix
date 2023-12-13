@@ -300,7 +300,7 @@ lib.mapAttrs
                 The canonical hostname of the machine providing the service.
               '';
               example = "example.com";
-              type = with lib.types; nullOr str; # change str to lib.types.domain once it exists;
+              type = lib.types.str; # change str to lib.types.domain once it exists;
               apply = x: "${x}.";
             };
           };
