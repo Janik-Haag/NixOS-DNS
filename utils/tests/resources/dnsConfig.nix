@@ -19,6 +19,14 @@ in
         "" = {
           cname.data = "www.example.com";
         };
+        "_xmpp._tcp" = {
+          srv.data = {
+            priority = 10;
+            weight = 5;
+            port = 5223;
+            target = "host1.example.com";
+          };
+        };
       };
     };
   };
