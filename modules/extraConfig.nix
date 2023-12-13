@@ -5,7 +5,7 @@
     zones = lib.mkOption {
       default = { };
       description = lib.mdDoc ''
-        Takes in a attrset of domain apex and there entries.
+        Takes in a attrset of domain apex and their entries.
       '';
       apply = x: lib.filterAttrsRecursive
         (n: v:

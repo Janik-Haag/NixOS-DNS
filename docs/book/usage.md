@@ -11,7 +11,7 @@ This would probably be a easy contribution if you are more familiar.
 
 ```nix
 {
-  # You off course have to add the `nixos-dns` input like:
+  # You of course have to add the `nixos-dns` input like:
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-dns.url = "github:Janik-Haag/nixos-dns";
@@ -24,7 +24,7 @@ This would probably be a easy contribution if you are more familiar.
     nixpkgs,
     nixos-dns
   }: let
-    # You probably know this but flake outputs are architecture depended,
+    # You probably know this but flake outputs are architecture dependent,
     # so we use this little helper function. Many people use `github:numtide/flake-utils` for that.
     forAllSystems = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ];
   in {
@@ -61,7 +61,7 @@ This would probably be a easy contribution if you are more familiar.
 
 ## NixOS Module
 
-NixOS-DNS was built to decouple modules even more from there host.
+NixOS-DNS was built to decouple modules even more from their host.
 To achieve this we have the concept of `baseDomains` and `subDomains`.
 
 In a nixos hosts configuration you would do something like:
@@ -85,7 +85,7 @@ You might notice the `.data` behind any record, this is because you might want t
 As you can see above the `.ttl` isn't specifically added to every record, this is because there is `networking.domains.defaultTTL`
 So every `record` has two fields `ttl` and `data`, the data type differs based on the record, for more info please refer to the module docs.
 
-And Inside of a module you would do something like:
+And inside of a module you would do something like:
 ```nix
   networking.domains.subDomains."grafana.example.com" = { };
 ```
@@ -110,7 +110,7 @@ So this would produce this set:
 
 > **note**
 >
-> baseDomains and there records don't end up in zone files, octodns configs, or any other output for that matter
+> baseDomains and their records don't end up in zone files, octodns configs, or any other output for that matter
 > So in the example above for "example.com" to end up in a zone file you would have to add:
 > ```nix
 >   networking.domains.subDomains."example.com" = { };
@@ -124,7 +124,7 @@ Nix supports `${}` operations inside of attrsets, so you can get creative and do
   networking.domains.subDomains."${networking.hostname}.prometheus.example.com" = { };
 ```
 
-NixOS-DNS does a bunch of magic to automatically map subDomains to there closest baseDomain and throws an error if there is no matching baseDomain.
+NixOS-DNS does a bunch of magic to automatically map subDomains to their closest baseDomain and throws an error if there is no matching baseDomain.
 So if we have:
 ```nix
   networking.domains.baseDomains = {
@@ -158,8 +158,8 @@ And `example.net` just wouldn't get matched, but that's fine since it is a baseD
 You probably want to add some more information, to do so you can use the extraConfiguration key in the dnsConfig.
 Please take a look at [the example](https://github.com/Janik-Haag/nixos-dns/tree/main/example/dns.nix) for usage information.
 
-All the hosts in `nixosConfigurations` and `extraConfig` get merged and nothing get's overwritten.
-So if you define multiple domains with the same records all the record data get's merged.
+All the hosts in `nixosConfigurations` and `extraConfig` get merged and nothing gets overwritten.
+So if you define multiple domains with the same records all the record data gets merged.
 
 ## octodns
 

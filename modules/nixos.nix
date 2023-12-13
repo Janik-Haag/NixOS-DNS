@@ -24,7 +24,7 @@ in
       };
       subDomains = lib.mkOption {
         description = lib.mdDoc ''
-          Attribute set of subdomains that inherit values from there matching domain.
+          Attribute set of subdomains that inherit values from their matching domain.
         '';
         default = { };
         apply = lib.filterAttrsRecursive (n: v:
@@ -64,7 +64,7 @@ in
       {
         assertion = true;
         message = ''
-          Alais assertion, same as CNAME but a alias is allowed as zone apex
+          Alias assertion, same as CNAME but a alias is allowed as zone apex
         '';
       }
       {
