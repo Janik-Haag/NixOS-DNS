@@ -43,7 +43,7 @@
   ;
 
   /*
-    Same thing as generate.octodnsConfig but instaed of returning a derivation it returns a set ready for converting it to a file.
+    Same thing as generate.octodnsConfig but instead of returning a derivation it returns a set ready for converting it to a file.
 
     Type:
       utils.octodns.makeConfigAttrs :: Attr -> Attr
