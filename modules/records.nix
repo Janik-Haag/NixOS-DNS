@@ -172,7 +172,7 @@ lib.mapAttrs
               };
               preference = lib.mkOption {
                 description = lib.mdDoc ''
-                  Lower is better/more preffered over other entries.
+                  Lower is better/more preferred over other entries.
                 '';
                 example = 10;
                 type = lib.types.int;
