@@ -265,7 +265,7 @@ lib.mapAttrs
           ${spfText}
         '';
         type = lib.types.unspecified;
-        apply = x: if x != null then lib.throwIfNot (x == null) spfText else x;
+        apply = x: lib.throwIfNot (x == null) spfText x;
       };
     srv.common = {
       description = lib.mdDoc ''
