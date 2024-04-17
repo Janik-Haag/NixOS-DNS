@@ -1,12 +1,19 @@
-{ utils }: { lib
-           , fetchpatch
-           , nixdoc
-           , nixosOptionsDoc
-           , runCommand
-           , ...
-           }:
+{ utils }:
+{
+  lib,
+  fetchpatch,
+  nixdoc,
+  nixosOptionsDoc,
+  runCommand,
+  ...
+}:
 let
-  utilNames = lib.mapAttrsToList (name: value: name) (builtins.removeAttrs utils [ "__unfix__" "extend" ]);
+  utilNames = lib.mapAttrsToList (name: value: name) (
+    builtins.removeAttrs utils [
+      "__unfix__"
+      "extend"
+    ]
+  );
   patchedNixdoc = nixdoc.overrideAttrs (o: {
     patches = (o.patches or [ ]) ++ [
       (fetchpatch {
@@ -19,7 +26,10 @@ in
 runCommand "utils" { } ''
   mkdir -p $out
   cp ${./utils.md} $out/index.md
-  ${
-    lib.concatLines (builtins.map (name: "${lib.getExe' patchedNixdoc "nixdoc"} --file ${../utils/${name}.nix} --prefix 'utils' --category '${name}' --description '${name}' > $out/${name}.md") utilNames)
-  }
+  ${lib.concatLines (
+    builtins.map (
+      name:
+      "${lib.getExe' patchedNixdoc "nixdoc"} --file ${../utils/${name}.nix} --prefix 'utils' --category '${name}' --description '${name}' > $out/${name}.md"
+    ) utilNames
+  )}
 ''

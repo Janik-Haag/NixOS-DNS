@@ -2,7 +2,8 @@
   This is a bit of a special thing since unlike every other `utils.*` namespace this is not a set but a function returning a set.
   The only function input is pkgs and it expects the nixpkgs package set. This is done in this way to keep this functions pure.
 */
-{ lib, utils }: pkgs:
+{ lib, utils }:
+pkgs:
 let
   writeYaml = name: value: (pkgs.formats.yaml { }).generate name value;
   generate = utils.generate pkgs;
@@ -17,8 +18,7 @@ in
   */
   zoneFiles =
     # expects the dnsConfig module output as a input
-    config:
-    generate.linkZoneFiles (utils.domains.getDnsConfig config);
+    config: generate.linkZoneFiles (utils.domains.getDnsConfig config);
 
   /*
     Type:
@@ -27,14 +27,12 @@ in
   linkZoneFiles =
     # takes the output from utils.domains.getDnsConfig
     config:
-    pkgs.linkFarm "zones" (lib.mapAttrsToList
-      (
-        name: value: {
-          inherit name;
-          path = utils.zonefiles.write name value;
-        }
-      )
-      config);
+    pkgs.linkFarm "zones" (
+      lib.mapAttrsToList (name: value: {
+        inherit name;
+        path = utils.zonefiles.write name value;
+      }) config
+    );
   /*
     Takes a Attrset like
     ```nix
@@ -57,7 +55,9 @@ in
     in
     writeYaml "config.yaml" (
       lib.recursiveUpdate cfg {
-        providers.config.directory = generate.linkZoneFiles (utils.octodns.fakeSOA (utils.domains.getDnsConfig config.dnsConfig));
+        providers.config.directory = generate.linkZoneFiles (
+          utils.octodns.fakeSOA (utils.domains.getDnsConfig config.dnsConfig)
+        );
       }
     );
 }

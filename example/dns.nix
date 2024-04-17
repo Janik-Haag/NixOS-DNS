@@ -4,7 +4,11 @@
     "example.com" = {
       "" = {
         ns = {
-          data = [ "ns1.invalid" "ns2.invalid" "ns3.invalid" ];
+          data = [
+            "ns1.invalid"
+            "ns2.invalid"
+            "ns3.invalid"
+          ];
         };
       };
     };
