@@ -8,12 +8,16 @@
   };
 
   outputs =
-    inputs @ { self
-    , nixpkgs
-    , nixos-dns
+    inputs@{
+      self,
+      nixpkgs,
+      nixos-dns,
     }:
     let
-      forAllSystems = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ];
+      forAllSystems = nixpkgs.lib.genAttrs [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
       dnsConfig = {
         inherit (self) nixosConfigurations;
         extraConfig = import ./dns.nix;
@@ -43,7 +47,8 @@
       # nix eval .#dnsDebugConfig
       dnsDebugConfig = nixos-dns.utils.debug.config dnsConfig;
 
-      packages = forAllSystems (system:
+      packages = forAllSystems (
+        system:
         let
           generate = nixos-dns.utils.generate nixpkgs.legacyPackages.${system};
         in

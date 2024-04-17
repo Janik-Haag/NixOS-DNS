@@ -1,9 +1,11 @@
-{ utils }: { lib
-           , pkgs
-           , config
-           , ...
-             # , nixosSystem
-           }:
+{ utils }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+# , nixosSystem
+}:
 let
   cfg = config.networking.domains;
   records = import ./records.nix { inherit lib utils cfg; };
@@ -15,7 +17,7 @@ in
       defaultTTL = import ./defaultTTL.nix { inherit lib; };
       baseDomains = lib.mkOption {
         default = { };
-        description = lib.mdDoc ''
+        description = ''
           Attribute set of domains and records for the subdomains to inherit.
         '';
         type = attrsOf (submodule {
@@ -23,32 +25,48 @@ in
         });
       };
       subDomains = lib.mkOption {
-        description = lib.mdDoc ''
+        description = ''
           Attribute set of subdomains that inherit values from their matching domain.
         '';
         default = { };
-        apply = lib.filterAttrsRecursive (n: v:
+        apply = lib.filterAttrsRecursive (
+          n: v:
           cfg.enable
-          && v
-          != {
-            data = null;
-            ttl = cfg.defaultTTL;
-          }
-          && v
-          != {
-            data = [ null ];
-            ttl = cfg.defaultTTL;
-          });
-        type = attrsOf (submodule ({ name, ... }: {
-          options = lib.mapAttrs (n: v: (v name)) records.sub;
-        }));
+          &&
+            v != {
+              data = null;
+              ttl = cfg.defaultTTL;
+            }
+          &&
+            v != {
+              data = [ null ];
+              ttl = cfg.defaultTTL;
+            }
+        );
+        type = attrsOf (
+          submodule (
+            { name, ... }:
+            {
+              options = lib.mapAttrs (n: v: (v name)) records.sub;
+            }
+          )
+        );
       };
     };
   };
   config = lib.mkIf cfg.enable {
     assertions = [
       {
-        assertion = !((builtins.length (builtins.filter (i: i == null) (lib.mapAttrsToList (n: v: utils.domains.getMostSpecific n (lib.mapAttrsToList (i: o: i) cfg.baseDomains)) cfg.subDomains))) > 0);
+        assertion =
+          !(
+            (builtins.length (
+              builtins.filter (i: i == null) (
+                lib.mapAttrsToList (
+                  n: v: utils.domains.getMostSpecific n (lib.mapAttrsToList (i: o: i) cfg.baseDomains)
+                ) cfg.subDomains
+              )
+            )) > 0
+          );
         message = ''
           At least one of your subdomains doesn't have a matching basedomain
         '';

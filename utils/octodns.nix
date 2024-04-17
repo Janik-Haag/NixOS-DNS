@@ -1,6 +1,5 @@
-/*
-*/
-{ lib, utils }: {
+{ lib, utils }:
+{
   /*
     Just adds a dummy SOA record.
     It won't actually be used by anything.
@@ -14,33 +13,33 @@
   fakeSOA =
     # takes the dnsConfig module
     dnsConfig:
-    lib.mapAttrs
-      (zone: entries:
-      if (lib.hasAttrByPath [ zone "soa" ] entries)
-      then entries
+    lib.mapAttrs (
+      zone: entries:
+      if
+        (lib.hasAttrByPath [
+          zone
+          "soa"
+        ] entries)
+      then
+        entries
       else
-        (lib.recursiveUpdate
-          entries
-          {
-            ${zone}.soa = {
-              ttl = 60;
-              data = [
-                {
-                  rname = "admin.example.invalid";
-                  mname = "ns.example.invalid";
-                  serial = 1970010100;
-                  refresh = 7200;
-                  retry = 3600;
-                  ttl = 60;
-                  expire = 1209600;
-                }
-              ];
-            };
-          }
-        )
-      )
-      dnsConfig
-  ;
+        (lib.recursiveUpdate entries {
+          ${zone}.soa = {
+            ttl = 60;
+            data = [
+              {
+                rname = "admin.example.invalid";
+                mname = "ns.example.invalid";
+                serial = 1970010100;
+                refresh = 7200;
+                retry = 3600;
+                ttl = 60;
+                expire = 1209600;
+              }
+            ];
+          };
+        })
+    ) dnsConfig;
 
   /*
     Same thing as generate.octodnsConfig but instead of returning a derivation it returns a set ready for converting it to a file.
@@ -51,21 +50,21 @@
   makeConfigAttrs =
     # Takes the same attrset input as generate.octodnsConfig
     settings:
-    lib.recursiveUpdate settings.config ({
-      providers = {
-        config = {
-          class = "octodns_bind.ZoneFileSource";
-          # gets overwritten at the build step
-          directory = null;
-          # by default the files are supposed to be called `$zone.` this makes it so it's only `$zone`
-          file_extension = "";
+    lib.recursiveUpdate settings.config (
+      {
+        providers = {
+          config = {
+            class = "octodns_bind.ZoneFileSource";
+            # gets overwritten at the build step
+            directory = null;
+            # by default the files are supposed to be called `$zone.` this makes it so it's only `$zone`
+            file_extension = "";
+          };
         };
-      };
-      inherit (settings) zones;
-      # dirty hack that should probably be refactored.. this should probably just be a module..
-    } // (if builtins.hasAttr "manager" settings
-    then { inherit (settings) manager; }
-    else { })
+        inherit (settings) zones;
+        # dirty hack that should probably be refactored.. this should probably just be a module..
+      }
+      // (if builtins.hasAttr "manager" settings then { inherit (settings) manager; } else { })
     );
 
   generateZoneAttrs = targets: {

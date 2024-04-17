@@ -1,36 +1,45 @@
-{ utils }: { lib, runCommand, nixosOptionsDoc, ... }:
+{ utils }:
+{
+  lib,
+  runCommand,
+  nixosOptionsDoc,
+  ...
+}:
 let
-  mkModuleDocs = module: (nixosOptionsDoc {
-    inherit (lib.evalModules {
-      modules = [
-        # ignores the configs part in modules
-        # which is good since we only want the options
-        {
-          config._module.check = false;
-          options._module.args = lib.mkOption { visible = false; };
-        }
+  mkModuleDocs =
+    module:
+    (nixosOptionsDoc {
+      inherit
+        (lib.evalModules {
+          modules = [
+            # ignores the configs part in modules
+            # which is good since we only want the options
+            {
+              config._module.check = false;
+              options._module.args = lib.mkOption { visible = false; };
+            }
 
-        module
-      ];
-    }) options;
-  }).optionsCommonMark;
+            module
+          ];
+          specialArgs = {
+            inherit utils;
+          };
+        })
+        options
+        ;
+    }).optionsCommonMark;
   modules = {
-    dnsConfig = import ../modules/dnsConfig.nix { inherit utils; };
+    dnsConfig = import ../modules/dnsConfig.nix;
+    extraConfig = import ../modules/extraConfig.nix;
 
-    # darwin = import ../modules/darwin.nix { inherit utils; };
     nixos = import ../modules/nixos.nix { inherit utils; };
-    extraConfig = import ../modules/extraConfig.nix { inherit utils; };
-
+    # darwin = import ../modules/darwin.nix { inherit utils; };
   };
 in
 runCommand "modules" { } ''
   mkdir -p $out
   cp ${./modules.md} $out/index.md
-  ${
-    lib.concatLines (
-      lib.mapAttrsToList (name: module:
-        "cat ${mkModuleDocs module} > $out/${name}.md"
-      ) modules
-    )
-  }
+  ${lib.concatLines (
+    lib.mapAttrsToList (name: module: "cat ${mkModuleDocs module} > $out/${name}.md") modules
+  )}
 ''

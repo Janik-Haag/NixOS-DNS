@@ -1,8 +1,7 @@
-/*
-  Functions to work with domains
-*/
+# Functions to work with domains
 
-{ lib, utils }: {
+{ lib, utils }:
+{
   /*
     Convert a string like "example.org"
     to a list like `[ "example" "org" ]`
@@ -13,10 +12,10 @@
   getParts =
     # String of a domain
     domains:
-    if (builtins.typeOf domains) == "list"
-    then (builtins.map (i: lib.splitString "." i) domains)
-    else (lib.splitString "." domains)
-  ;
+    if (builtins.typeOf domains) == "list" then
+      (builtins.map (i: lib.splitString "." i) domains)
+    else
+      (lib.splitString "." domains);
 
   /*
     Compare domain parts and give them a value
@@ -32,12 +31,12 @@
     sub:
     # the base domain part you want to compare
     base:
-    if sub == base
-    then 1
-    else if base == null
-    then 0
-    else -1
-  ;
+    if sub == base then
+      1
+    else if base == null then
+      0
+    else
+      -1;
 
   /*
     uses fillList to generate two lists of domain parts,
@@ -65,12 +64,12 @@
         inherit base;
       };
     in
-    if lenSub == lenBase
-    then (return subDomain baseDomain)
-    else if lenSub < lenBase
-    then (return (utils.general.fillList subDomain (lenBase - lenSub) null) baseDomain)
-    else (return subDomain (utils.general.fillList baseDomain (lenSub - lenBase) null))
-  ;
+    if lenSub == lenBase then
+      (return subDomain baseDomain)
+    else if lenSub < lenBase then
+      (return (utils.general.fillList subDomain (lenBase - lenSub) null) baseDomain)
+    else
+      (return subDomain (utils.general.fillList baseDomain (lenSub - lenBase) null));
 
   /*
     This returns a list like `[ 0 (-1) 1  1 ]`
@@ -88,14 +87,7 @@
     let
       comp = utils.domains.comparableParts subDomain baseDomain;
     in
-    lib.zipListsWith
-      (
-        sub: base:
-        utils.domains.comparePart sub base
-      )
-      comp.sub
-      comp.base
-  ;
+    lib.zipListsWith (sub: base: utils.domains.comparePart sub base) comp.sub comp.base;
 
   /*
     Expects a list of domain parts like `[ "ns" "example" "com" ]`
@@ -106,9 +98,7 @@
   */
   construct =
     # list of domain parts to construct
-    parts:
-    lib.concatStringsSep "." parts
-  ;
+    parts: lib.concatStringsSep "." parts;
 
   /*
     This returns a attrSet like
@@ -145,8 +135,7 @@
     {
       valid = !((builtins.length (builtins.filter (i: i < 0) info)) > 0);
       value = lib.foldr (a: b: a + b) 0 info;
-    }
-  ;
+    };
 
   /*
     This function takes a sub domain and a list of domains,
@@ -165,22 +154,25 @@
     #
     baseDomains:
     (lib.foldl'
-      (placeholder: domain:
-      let
-        validation = utils.domains.validateSubDomain (utils.domains.getParts subDomain) domain;
-      in
-      if validation.valid && validation.value > placeholder.value
-      then {
-        domain = utils.domains.construct domain;
-        inherit (validation) value;
-      }
-      else placeholder)
+      (
+        placeholder: domain:
+        let
+          validation = utils.domains.validateSubDomain (utils.domains.getParts subDomain) domain;
+        in
+        if validation.valid && validation.value > placeholder.value then
+          {
+            domain = utils.domains.construct domain;
+            inherit (validation) value;
+          }
+        else
+          placeholder
+      )
       {
         domain = null;
         value = -1;
       }
-      (utils.domains.getParts baseDomains)).domain
-  ;
+      (utils.domains.getParts baseDomains)
+    ).domain;
 
   /*
     This Functions uses getMostSpecific to get the value of a corresponding key for a sub domain
@@ -196,9 +188,8 @@
     # the key from which to get the value
     value:
     baseDomains.${
-    utils.domains.getMostSpecific subDomain (lib.mapAttrsToList (n: v: n) baseDomains)
-    }.${value}
-  ;
+      utils.domains.getMostSpecific subDomain (lib.mapAttrsToList (n: v: n) baseDomains)
+    }.${value};
 
   /*
     Be care full when using this, since you might end up overwriting previous results because if a key is defined multiple times only the last value will remain except if the value is a list then all of the content will be merged
@@ -206,22 +197,55 @@
     Type:
       utils.domains.getDomainsFromNixosConfigurations :: Attr -> Attr
   */
-  getDomainsFromNixosConfigurations = nixosConfigurations:
+  getDomainsFromNixosConfigurations =
+    nixosConfigurations:
     let
-      baseDomains = lib.attrNames (lib.fold (l: r: lib.recursiveUpdate l r) { } (lib.filter (a: lib.hasAttrByPath [ "config" "networking" "domains" "baseDomains" ] a) (lib.mapAttrsToList (n: v: v) nixosConfigurations))).config.networking.domains.baseDomains;
-      inherit ((utils.general.recursiveUpdateLists (lib.filter (a: lib.hasAttrByPath [ "config" "networking" "domains" "subDomains" ] a) (lib.mapAttrsToList (n: v: v) nixosConfigurations))).config.networking.domains) subDomains;
-      reducedBaseDomains = lib.fold
-        (domain: acc:
-          acc
-          ++ (
-            if (utils.domains.getMostSpecific domain (lib.subtractLists [ domain ] baseDomains)) == null
-            then [ domain ]
-            else [ ]
-          )) [ ]
-        baseDomains;
+      baseDomains =
+        lib.attrNames
+          (lib.fold (l: r: lib.recursiveUpdate l r) { } (
+            lib.filter (
+              a:
+              lib.hasAttrByPath [
+                "config"
+                "networking"
+                "domains"
+                "baseDomains"
+              ] a
+            ) (lib.mapAttrsToList (n: v: v) nixosConfigurations)
+          )).config.networking.domains.baseDomains;
+      inherit
+        ((utils.general.recursiveUpdateLists (
+          lib.filter (
+            a:
+            lib.hasAttrByPath [
+              "config"
+              "networking"
+              "domains"
+              "subDomains"
+            ] a
+          ) (lib.mapAttrsToList (n: v: v) nixosConfigurations)
+        )).config.networking.domains
+        )
+        subDomains
+        ;
+      reducedBaseDomains = lib.fold (
+        domain: acc:
+        acc
+        ++ (
+          if (utils.domains.getMostSpecific domain (lib.subtractLists [ domain ] baseDomains)) == null then
+            [ domain ]
+          else
+            [ ]
+        )
+      ) [ ] baseDomains;
       subDomainKeys = lib.attrNames subDomains;
     in
-    lib.fold (attr: acc: lib.recursiveUpdate acc { ${(utils.domains.getMostSpecific attr reducedBaseDomains)}.${attr} = subDomains.${attr}; }) { } subDomainKeys;
+    lib.fold (
+      attr: acc:
+      lib.recursiveUpdate acc {
+        ${(utils.domains.getMostSpecific attr reducedBaseDomains)}.${attr} = subDomains.${attr};
+      }
+    ) { } subDomainKeys;
 
   /*
     Expects a attribute-set like:
@@ -237,12 +261,18 @@
     Type:
       utils.domains.getDnsConfig :: Attr -> Attr
   */
-  getDnsConfig = config:
-    utils.general.recursiveUpdateLists (builtins.attrValues (lib.evalModules {
-      modules = [
-        { inherit config; }
-        (import ../modules/dnsConfig.nix { inherit utils; })
-      ];
-    }).config)
-  ;
+  getDnsConfig =
+    config:
+    utils.general.recursiveUpdateLists (
+      builtins.attrValues
+        (lib.evalModules {
+          modules = [
+            { inherit config; }
+            ../modules/dnsConfig.nix
+          ];
+          specialArgs = {
+            inherit utils;
+          };
+        }).config
+    );
 }

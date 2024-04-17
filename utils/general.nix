@@ -1,7 +1,6 @@
-/*
-  General are functions not really specific to NixOS-DNS that might be worth up-streaming in the nixpkgs lib.
-*/
-{ lib, utils }: {
+# General are functions not really specific to NixOS-DNS that might be worth up-streaming in the nixpkgs lib.
+{ lib, utils }:
+{
   /*
     Function that merges sets the same as `lib.recursiveUpdate`.
     But if a value is a list it merges the list instead of overwriting it.
@@ -14,20 +13,21 @@
     # List of sets to merge
     attrList:
     let
-      f = attrPath:
+      f =
+        attrPath:
         builtins.zipAttrsWith (
           n: values:
-            if lib.tail values == [ ]
-            then lib.head values
-            else if lib.all lib.isList values
-            then lib.unique (lib.concatLists values)
-            else if lib.all lib.isAttrs values
-            then f (lib.attrPath ++ [ n ]) values
-            else lib.last values
+          if lib.tail values == [ ] then
+            lib.head values
+          else if lib.all lib.isList values then
+            lib.unique (lib.concatLists values)
+          else if lib.all lib.isAttrs values then
+            f (lib.attrPath ++ [ n ]) values
+          else
+            lib.last values
         );
     in
-    f [ ] attrList
-  ;
+    f [ ] attrList;
 
   /*
     Prepends a list with a specific value X amount of times
@@ -53,6 +53,6 @@
     # how often
     amount:
     # with what
-    value: ((lib.replicate amount value) ++ list)
-  ;
+    value:
+    ((lib.replicate amount value) ++ list);
 }

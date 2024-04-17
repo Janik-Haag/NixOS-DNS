@@ -1,4 +1,8 @@
-{ self, lib, utils }:
+{
+  self,
+  lib,
+  utils,
+}:
 let
   defaultConfig = {
     boot.isContainer = true; # Hack to have an easy time building
@@ -12,7 +16,11 @@ in
     zones = {
       "example.com" = {
         "" = {
-          ns.data = [ "ns1.invalid" "ns2.invalid" "ns3.invalid" ];
+          ns.data = [
+            "ns1.invalid"
+            "ns2.invalid"
+            "ns3.invalid"
+          ];
         };
       };
       "example.org" = {

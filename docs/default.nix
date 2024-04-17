@@ -1,4 +1,8 @@
-{ lib, utils, pkgs }:
+{
+  lib,
+  utils,
+  pkgs,
+}:
 # docs = pkgs.callPackage ./docs.nix { };
 let
   # can be removed once https://github.com/rust-lang/mdBook/pull/2262 lands

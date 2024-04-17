@@ -23,7 +23,7 @@ jobs:
         run: nix run nixpkgs#statix -- check .
 
       - name: "Check formatting"
-        run: nix fmt -- --check .
+        run: nix fmt -- --fail-on-change
 
       - name: "Try building docs"
         run: nix build .#docs

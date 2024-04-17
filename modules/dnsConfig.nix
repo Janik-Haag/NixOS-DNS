@@ -1,17 +1,17 @@
-{ utils }: { lib, ... }:
+{ utils, lib, ... }:
 {
   options = {
     # todo
     # darwin = lib.mkOption {
     #   default = { };
-    #   description = lib.mdDoc ''
+    #   description = ''
     #   '';
     #   visible = false;
     #   type = import ./darwin.nix;
     # };
     nixosConfigurations = lib.mkOption {
       default = { };
-      description = lib.mdDoc ''
+      description = ''
         Takes in the equivalent of the self.nixosConfigurations flake attribute.
       '';
       visible = "shallow";
@@ -21,11 +21,11 @@
     extraConfig = lib.mkOption {
       apply = x: if x != { } then x.zones else x;
       default = { };
-      description = lib.mdDoc ''
+      description = ''
         Takes in the extraConfig module.
       '';
       visible = "shallow";
-      type = lib.types.submodule (import ./extraConfig.nix { inherit utils; });
+      type = lib.types.submodule (import ./extraConfig.nix);
     };
   };
 }
