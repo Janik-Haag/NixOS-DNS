@@ -17,7 +17,7 @@ in
       defaultTTL = import ./defaultTTL.nix { inherit lib; };
       baseDomains = lib.mkOption {
         default = { };
-        description = lib.mdDoc ''
+        description = ''
           Attribute set of domains and records for the subdomains to inherit.
         '';
         type = attrsOf (submodule {
@@ -25,7 +25,7 @@ in
         });
       };
       subDomains = lib.mkOption {
-        description = lib.mdDoc ''
+        description = ''
           Attribute set of subdomains that inherit values from their matching domain.
         '';
         default = { };

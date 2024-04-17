@@ -9,7 +9,7 @@
     defaultTTL = import ./defaultTTL.nix { inherit lib; };
     zones = lib.mkOption {
       default = { };
-      description = lib.mdDoc ''
+      description = ''
         Takes in a attrset of domain apex and their entries.
       '';
       apply =

@@ -9,11 +9,11 @@ let
     lib.mkOption {
       default = { };
       # this description doesn't get rendered anywhere so we can just leave it empty
-      description = lib.mdDoc '''';
+      description = '''';
       type = lib.types.submodule {
         options = {
           ttl = lib.mkOption {
-            description = lib.mdDoc ''
+            description = ''
               The time to live (TTL) is a field on DNS records that tells you how
               long the record is valid (in seconds) and thus when it will be
               updated.
@@ -46,14 +46,14 @@ lib.mapAttrs
       (n: v: func n (if (lib.hasAttrByPath [ "${type}" ] v) then (v.common // v.${type}) else v.common))
       {
         a.common = {
-          description = lib.mdDoc ''
+          description = ''
             Commonly used to map a name to a list of IPv4 addresses.
           '';
           example = "9.9.9.9";
           type = with lib.types; nullOr (coercedTo str (f: [ f ]) (listOf str)); # change me to lib.types.ipv4 once it exists
         };
         aaaa.common = {
-          description = lib.mdDoc ''
+          description = ''
             Commonly used to map a name to a list of IPv6 addresses.
           '';
           example = "2620:fe::fe";
@@ -61,7 +61,7 @@ lib.mapAttrs
         };
         alias = {
           common = {
-            description = lib.mdDoc ''
+            description = ''
               Maps one domain name to another and uses the dns resolver of your dns server for responses.
             '';
             example = "foo.example.com";
@@ -79,7 +79,7 @@ lib.mapAttrs
         };
         cname = {
           common = {
-            description = lib.mdDoc ''
+            description = ''
               Same as alias but the requesting party will have to resolve the response which can lead to more latency.
             '';
             example = "foo.example.com";
@@ -97,7 +97,7 @@ lib.mapAttrs
           };
         };
         caa.common = {
-          description = lib.mdDoc ''
+          description = ''
             DNS Certification Authority Authorization, constraining acceptable CAs for a host/domain
           '';
           type =
@@ -106,7 +106,7 @@ lib.mapAttrs
               caaSubModule = submodule {
                 options = {
                   flags = lib.mkOption {
-                    description = lib.mdDoc ''
+                    description = ''
                       A flags byte which implements an extensible signaling system for future use.
                       As of 2018, only the issuer critical flag has been defined, which instructs certificate authorities that they must understand the corresponding property tag before issuing a certificate.
                       This flag allows the protocol to be extended in the future with mandatory extensions, similar to critical extensions in X.509 certificates.
@@ -115,7 +115,7 @@ lib.mapAttrs
                     type = int;
                   };
                   tag = lib.mkOption {
-                    description = lib.mdDoc ''
+                    description = ''
                       Please take a look at [this list](https://en.wikipedia.org/wiki/DNS_Certification_Authority_Authorization#Record)
                     '';
                     example = "issue";
@@ -129,7 +129,7 @@ lib.mapAttrs
                     ];
                   };
                   value = lib.mkOption {
-                    description = lib.mdDoc ''
+                    description = ''
                       The value associated with the chosen property tag.
                     '';
                     example = "letsencrypt.org";
@@ -146,7 +146,7 @@ lib.mapAttrs
         };
         dname = {
           common = {
-            description = lib.mdDoc ''
+            description = ''
               Same as cname but also gets applied to any subdomain of the given domain
             '';
             example = "foo.example.com";
@@ -164,7 +164,7 @@ lib.mapAttrs
           };
         };
         ns.common = {
-          description = lib.mdDoc ''
+          description = ''
             Nameserver responsible for your zone.
             Note, that this option technically allows for only one name server but I would strongly advise against that.
           '';
@@ -177,7 +177,7 @@ lib.mapAttrs
         };
         mx = {
           common = {
-            description = lib.mdDoc ''
+            description = ''
               List of mail exchange servers that accept email for this domain.
             '';
             type =
@@ -186,14 +186,14 @@ lib.mapAttrs
                 mxSubModule = submodule {
                   options = {
                     exchange = lib.mkOption {
-                      description = lib.mdDoc ''
+                      description = ''
                         Name of the mailserver
                       '';
                       example = "mail1.example.com";
                       type = lib.types.str;
                     };
                     preference = lib.mkOption {
-                      description = lib.mdDoc ''
+                      description = ''
                         Lower is better/more preferred over other entries.
                       '';
                       example = 10;
@@ -211,7 +211,7 @@ lib.mapAttrs
         };
         soa = {
           common = {
-            description = lib.mdDoc ''
+            description = ''
               Specifies authoritative information about a DNS zone.
             '';
             type =
@@ -220,14 +220,14 @@ lib.mapAttrs
                 soaSubModule = submodule {
                   options = {
                     mname = lib.mkOption {
-                      description = lib.mdDoc ''
+                      description = ''
                         This is the name of the primary nameserver for the zone. Secondary servers that maintain duplicates of the zone's DNS records receive updates to the zone from this primary server.
                       '';
                       example = "ns.example.com";
                       type = lib.types.str;
                     };
                     rname = lib.mkOption {
-                      description = lib.mdDoc ''
+                      description = ''
                         Email of zone administrators.
                       '';
                       example = "noc@example.com";
@@ -235,35 +235,35 @@ lib.mapAttrs
                       apply = builtins.replaceStrings [ "@" ] [ "." ];
                     };
                     serial = lib.mkOption {
-                      description = lib.mdDoc ''
+                      description = ''
                         A zone serial number is a version number for the SOA record (the higher the newer). When the serial number changes in a zone file, this alerts secondary nameservers that they should update their copies of the zone file via a zone transfer. Usually most dns-utilities working with zonefiles increment it automatically.
                       '';
                       example = "";
                       type = lib.types.int;
                     };
                     refresh = lib.mkOption {
-                      description = lib.mdDoc ''
+                      description = ''
                         The length of time secondary servers should wait before asking primary servers for the SOA record to see if it has been updated.
                       '';
                       example = 86400;
                       type = lib.types.int;
                     };
                     retry = lib.mkOption {
-                      description = lib.mdDoc ''
+                      description = ''
                         The length of time a server should wait for asking an unresponsive primary nameserver for an update again.
                       '';
                       example = "";
                       type = lib.types.int;
                     };
                     expire = lib.mkOption {
-                      description = lib.mdDoc ''
+                      description = ''
                         If a secondary server does not get a response from the primary server for this amount of time, it should stop responding to queries for the zone.
                       '';
                       example = "";
                       type = lib.types.int;
                     };
                     ttl = lib.mkOption {
-                      description = lib.mdDoc '''';
+                      description = '''';
                       default = cfg.defaultTTL;
                       defaultText = lib.literalExpression "cfg.defaultTTL";
                       example = "";
@@ -287,14 +287,14 @@ lib.mapAttrs
           in
           {
             default = null;
-            description = lib.mdDoc ''
+            description = ''
               ${spfText}
             '';
             type = lib.types.unspecified;
             apply = x: lib.throwIfNot (x == null) spfText x;
           };
         srv.common = {
-          description = lib.mdDoc ''
+          description = ''
             Specification of data in the Domain Name System defining the location, i.e., the hostname and port number, of servers for specified services. It is defined in RFC 2782.
           '';
           type =
@@ -303,28 +303,28 @@ lib.mapAttrs
               srvSubModule = submodule {
                 options = {
                   priority = lib.mkOption {
-                    description = lib.mdDoc ''
+                    description = ''
                       The priority of the target host, lower value means more preferred.
                     '';
                     example = 10;
                     type = lib.types.int;
                   };
                   weight = lib.mkOption {
-                    description = lib.mdDoc ''
+                    description = ''
                       Relative weight for records with the same priority, higher value means more preferred.
                     '';
                     example = 1;
                     type = lib.types.int;
                   };
                   port = lib.mkOption {
-                    description = lib.mdDoc ''
+                    description = ''
                       The TCP or UDP port on which the service is to be found.
                     '';
                     example = 4731;
                     type = lib.types.int;
                   };
                   target = lib.mkOption {
-                    description = lib.mdDoc ''
+                    description = ''
                       The canonical hostname of the machine providing the service.
                     '';
                     example = "example.com";
@@ -341,7 +341,7 @@ lib.mapAttrs
           apply = lib.toList;
         };
         txt.common = {
-          description = lib.mdDoc ''
+          description = ''
             Just any string, commonly used to transfer machine readable metadata.
           '';
           example = "v=DMARC1; p=none";
@@ -349,7 +349,7 @@ lib.mapAttrs
         };
         uri = {
           common = {
-            description = lib.mdDoc ''
+            description = ''
               Used for publishing mappings from hostnames to URIs.
             '';
             type =
@@ -358,21 +358,21 @@ lib.mapAttrs
                 uriSubModule = submodule {
                   options = {
                     priority = lib.mkOption {
-                      description = lib.mdDoc ''
+                      description = ''
                         The priority of the target host, lower value means more preferred.
                       '';
                       example = 10;
                       type = lib.types.int;
                     };
                     weight = lib.mkOption {
-                      description = lib.mdDoc ''
+                      description = ''
                         Relative weight for records with the same priority, higher value means more preferred.
                       '';
                       example = 1;
                       type = lib.types.int;
                     };
                     target = lib.mkOption {
-                      description = lib.mdDoc ''
+                      description = ''
                         The URI of the target, where the URI is as specified in RFC 3986
                       '';
                       example = "ftp://example.com/public";
