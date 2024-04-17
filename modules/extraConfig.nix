@@ -1,4 +1,4 @@
-{ utils }: { lib, config, ... }:
+{ utils, lib, config, ... }:
 {
   options = {
     defaultTTL = import ./defaultTTL.nix { inherit lib; };

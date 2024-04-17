@@ -241,8 +241,11 @@
     utils.general.recursiveUpdateLists (builtins.attrValues (lib.evalModules {
       modules = [
         { inherit config; }
-        (import ../modules/dnsConfig.nix { inherit utils; })
+        ../modules/dnsConfig.nix
       ];
+      specialArgs = {
+        inherit utils;
+      };
     }).config)
   ;
 }

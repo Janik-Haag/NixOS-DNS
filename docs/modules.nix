@@ -12,15 +12,17 @@ let
 
         module
       ];
+      specialArgs = {
+        inherit utils;
+      };
     }) options;
   }).optionsCommonMark;
   modules = {
-    dnsConfig = import ../modules/dnsConfig.nix { inherit utils; };
+    dnsConfig = import ../modules/dnsConfig.nix;
+    extraConfig = import ../modules/extraConfig.nix;
 
-    # darwin = import ../modules/darwin.nix { inherit utils; };
     nixos = import ../modules/nixos.nix { inherit utils; };
-    extraConfig = import ../modules/extraConfig.nix { inherit utils; };
-
+    # darwin = import ../modules/darwin.nix { inherit utils; };
   };
 in
 runCommand "modules" { } ''

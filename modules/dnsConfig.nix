@@ -1,4 +1,4 @@
-{ utils }: { lib, ... }:
+{ utils, lib, ... }:
 {
   options = {
     # todo
@@ -25,7 +25,7 @@
         Takes in the extraConfig module.
       '';
       visible = "shallow";
-      type = lib.types.submodule (import ./extraConfig.nix { inherit utils; });
+      type = lib.types.submodule (import ./extraConfig.nix);
     };
   };
 }
