@@ -29,4 +29,7 @@ jobs:
         run: nix build .#docs
 
       - name: "Try building example"
-        run: nix build ./example#octodns
+        run: nix build --override-input nixos-dns $(pwd)/ ./example#octodns
+
+      - name: "Check zonefile with bind"
+        run: nix build --override-input nixos-dns $(pwd)/ ./example#zoneFiles && nix shell nixpkgs#bind --command named-checkzone example.com result/example.com
