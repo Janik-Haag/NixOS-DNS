@@ -84,7 +84,7 @@ lib.mapAttrs
             '';
             example = "foo.example.com";
             type = with lib.types; nullOr str; # change str to lib.types.domain once it exists
-            apply = x: if x != null then lib.toList x else x;
+            apply = x: if x != null then lib.toList "${x}." else x;
           };
           sub = {
             apply = lib.toList;
