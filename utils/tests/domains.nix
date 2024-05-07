@@ -276,7 +276,7 @@
       "example.org" = {
         "example.org" = {
           cname = {
-            data = [ "www.example.com" ];
+            data = [ "www.example.com." ];
             ttl = 60;
           };
         };
