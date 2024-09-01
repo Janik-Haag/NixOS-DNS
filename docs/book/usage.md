@@ -1,11 +1,68 @@
 # Usage
 For all the modules options take a look [here](modules/index.md).
-And there is a quite elaborate example [here](https://github.com/Janik-Haag/nixos-dns/tree/main/example), you can also use it as a template by doing: `nix flake init -t github:Janik-Haag/nixos-dns`.
+There is a quite elaborate example [here](https://github.com/Janik-Haag/nixos-dns/tree/main/example), you can also use it as a template (`nix flake init -t github:Janik-Haag/nixos-dns`).
 
-## classic
+## classical nix
 
-There is a `default.nix` in the project root with `flake-compat`, I was told that it should be enough to use it in a classical NixOS environment, but have no idea how to do so (probably adding a channel?).
-This would probably be a easy contribution if you are more familiar.
+Please note that the following code uses colmena to retrieve the DNS information from the hosts configurations, and npins for version pinning.
+You can of course use nixos-dns without colmena, you'll just have to figure out how to reference nixosConfigurations.
+
+```nix
+# default.nix
+let
+  pins = import ./npins;
+in
+{ pkgs ? import pins.nixpkgs { }
+, colmena ? pins.colmena
+, nixos-dns ? import pins.nixos-dns
+}:
+let
+  generate = nixos-dns.utils.generate pkgs;
+in {
+  dns = generate.octodnsConfig {
+    config = {
+      providers = {
+        hetzner = {
+          class = "octodns_hetzner.HetznerProvider";
+          token = "env/HETZNER_DNS_API";
+        };
+      };
+    };
+    zones = {
+      "example.com." = nixos-dns.utils.octodns.generateZoneAttrs [ "hetzner" ];
+    };
+    dnsConfig = {
+      nixosConfigurations = (import "${colmena}/src/nix/hive/eval.nix" {
+        rawHive = (import ./hive.nix { inherit pkgs nixos-dns; });
+      }).nodes;
+      extraConfig = import ./dns.nix;
+    };
+  };
+}
+```
+
+```nix
+# hive.nix
+{ pkgs, nixos-dns }: {
+  meta = {
+    nixpkgs = pkgs;
+  };
+  defaults = { pkgs, lib, config, ... }: {
+    imports = [
+      ((import nixos-dns).nixosModules.default)
+    ];
+  };
+  exampleHost = {
+    deployment.targetHost = "host.example.com";
+    deployment.tags = [ "infra" ];
+    imports = [
+      ./hosts/exampleHost.nix
+    ];
+  };
+}
+```
+
+Now you just need to run `nix-build -A dns` to realize the zonefiles and octodns config.
 
 ## flakes
 
@@ -18,7 +75,6 @@ This would probably be a easy contribution if you are more familiar.
     nixos-dns.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  # Nothing special here
   outputs = inputs @ {
     self,
     nixpkgs,
