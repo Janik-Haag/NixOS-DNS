@@ -76,6 +76,19 @@
             data = [ "example.com" ];
           };
         };
+        "_443._tcp.example.com" = {
+          tlsa = {
+            ttl = 3600;
+            data = [
+              {
+                usage = 3;
+                selector = 1;
+                matchingType = 1;
+                certificateAssociationData = "9c4b5e3816504bdf4cbcfcc5c1b41ac18f2def723ec0d8299543e6d06471e610";
+              }
+            ];
+          };
+        };
         "_ftp._tcp.example.com" = {
           uri = {
             ttl = 3600;
@@ -117,6 +130,7 @@
     );
     expected = ''
       *.example.com. IN 60 ALIAS example.com
+      _443._tcp.example.com. IN 3600 TLSA 3 1 1 9c4b5e3816504bdf4cbcfcc5c1b41ac18f2def723ec0d8299543e6d06471e610
       _ftp._tcp.example.com. IN 3600 URI 10 5 ftp://example.com/public
       _xmpp._tcp.example.com. IN 86400 SRV 10 5 5223 xmpp.example.com
       example.com. IN 60 A 198.51.100.42

@@ -60,6 +60,8 @@
       "SOA ${value.mname}. ${value.rname}. ( ${builtins.toString value.serial} ${builtins.toString value.refresh} ${builtins.toString value.retry} ${builtins.toString value.expire} ${builtins.toString value.ttl} )"
     else if record == "txt" then
       "TXT ${utils.zonefiles.formatTxtRecord value}"
+    else if record == "tlsa" then
+      "TLSA ${builtins.toString value.usage} ${builtins.toString value.selector} ${builtins.toString value.matchingType} ${value.certificateAssociationData}"
     else
       "${lib.toUpper record} ${value}";
   /*
