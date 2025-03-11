@@ -62,6 +62,8 @@
       "TXT ${utils.zonefiles.formatTxtRecord value}"
     else if record == "tlsa" then
       "TLSA ${builtins.toString value.usage} ${builtins.toString value.selector} ${builtins.toString value.matchingType} ${value.certificateAssociationData}"
+    else if record == "sshfp" then
+      "SSHFP ${builtins.toString value.algorithm} ${builtins.toString value.type} ${value.fingerprint}"
     else
       "${lib.toUpper record} ${value}";
   /*

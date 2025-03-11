@@ -69,6 +69,16 @@
             ttl = 60;
             data = [ "v=spf1 a:mail.aq0.de -all" ];
           };
+          sshfp = {
+            ttl = 60;
+            data = [
+              {
+                algorithm = 4;
+                type = 2;
+                fingerprint = "f4f4ada530e64b5e574ed4459d7a40424179fd03a766282a2c1060010719626f";
+              }
+            ];
+          };
         };
         "*.example.com" = {
           alias = {
@@ -141,6 +151,7 @@
       example.com. IN 60 NS ns2.example.com.
       example.com. IN 60 NS ns3.example.org.
       example.com. IN 60 SOA ns.example.invalid. admin.example.invalid. ( 1970010100 7200 3600 1209600 60 )
+      example.com. IN 60 SSHFP 4 2 f4f4ada530e64b5e574ed4459d7a40424179fd03a766282a2c1060010719626f
       example.com. IN 60 TXT "v=spf1 a:mail.aq0.de -all"
       mail.example.com. IN 60 CNAME e-mail.provider.invalid
       redirect.example.com. IN 60 DNAME example.org

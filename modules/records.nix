@@ -441,10 +441,55 @@ lib.mapAttrs
             apply = lib.toList;
           };
         };
+        sshfp = {
+          common = {
+            description = ''
+              Used to bind SSH host keys fingerprints to domain names.
+              Can be generated with the `openssh` package:
+
+              ```bash
+              ssh-keyscan -D example.com
+              ```
+            '';
+            type =
+              with lib.types;
+              let
+                tlsaSubModule = submodule {
+                  options = {
+                    algorithm = lib.mkOption {
+                      description = ''
+                        Algorithm of the SSH host key.
+                      '';
+                      example = 4;
+                      type = lib.types.int;
+                    };
+                    type = lib.mkOption {
+                      description = ''
+                        Algorith used to generate the fingerprint of the SSH host key.
+                      '';
+                      example = 1;
+                      type = lib.types.int;
+                    };
+                    fingerprint = lib.mkOption {
+                      description = ''
+                        Hexadecimal fingerprint of the SSH host key.
+                      '';
+                      example = "035e39adea06bd15c0b4ae06375f36459a5780bc";
+                      type = lib.types.str;
+                    };
+                  };
+                };
+              in
+              nullOr (oneOf [
+                tlsaSubModule
+                (listOf (nullOr tlsaSubModule))
+              ]);
+            apply = lib.toList;
+          };
+        };
         # loc = lib.mkOption { };
         # naptr = lib.mkOption { };
         # ptr = lib.mkOption { };
-        # sshfp = lib.mkOption { };
         # zonemd = lib.mkOption { };
       }
   )
