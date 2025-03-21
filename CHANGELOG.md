@@ -1,4 +1,5 @@
 # 2024-05-06
+
 If you use CNAMEs a trailing dot will now be added automatically.
 This behavior is in line with other record types that use dns names.
 

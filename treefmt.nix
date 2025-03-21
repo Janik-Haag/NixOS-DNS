@@ -1,4 +1,13 @@
 _: {
   projectRootFile = ".git/config";
-  programs.nixfmt-rfc-style.enable = true;
+
+  settings.global.excludes = [
+    ".envrc"
+  ];
+
+  programs = {
+    mdformat.enable = true;
+    nixfmt.enable = true;
+    yamlfmt.enable = true;
+  };
 }

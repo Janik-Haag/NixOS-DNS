@@ -1,4 +1,5 @@
 # Usage
+
 For all the modules options take a look [here](modules/index.md).
 There is a quite elaborate example [here](https://github.com/Janik-Haag/nixos-dns/tree/main/example), you can also use it as a template (`nix flake init -t github:Janik-Haag/nixos-dns`).
 
@@ -142,11 +143,13 @@ As you can see above the `.ttl` isn't specifically added to every record, this i
 So every `record` has two fields `ttl` and `data`, the data type differs based on the record, for more info please refer to the module docs.
 
 And inside of a module you would do something like:
+
 ```nix
   networking.domains.subDomains."grafana.example.com" = { };
 ```
 
 So this would produce this set:
+
 ```nix
 {
   "example.com" = {
@@ -168,12 +171,15 @@ So this would produce this set:
 >
 > baseDomains and their records don't end up in zone files, octodns configs, or any other output for that matter
 > So in the example above for "example.com" to end up in a zone file you would have to add:
+>
 > ```nix
 >   networking.domains.subDomains."example.com" = { };
 > ```
+>
 > to the hosts configuration.
 
 Nix supports `${}` operations inside of attrsets, so you can get creative and do stuff like:
+
 ```nix
   networking.domains.subDomains."${networking.hostname}.example.com" = { };
   networking.domains.subDomains."*.${networking.hostname}.example.com" = { };
@@ -182,6 +188,7 @@ Nix supports `${}` operations inside of attrsets, so you can get creative and do
 
 NixOS-DNS does a bunch of magic to automatically map subDomains to their closest baseDomain and throws an error if there is no matching baseDomain.
 So if we have:
+
 ```nix
   networking.domains.baseDomains = {
     "example.net" = {};
@@ -190,7 +197,9 @@ So if we have:
     "subdomain.example.com" = {};
   };
 ```
+
 and:
+
 ```nix
   networking.domains.baseDomains = {
     "example.com" = {};
@@ -262,6 +271,7 @@ NixOS-DNS uses the bind provider internally, since it can reads zone-files, so w
 We do this because it is a lot less maintenance and less likely to have bugs instead of also maintaining a nixos-dns to octodns internal yaml builder.
 
 You can run the example below to check if your config works, just make sure to do a `nix build /your/nixos/config#octodns` before and replace `example.com.` (note the trailing dot) with your domain.
+
 ```bash
 nix-shell -p 'octodns.withProviders (ps: [ octodns-providers.bind octodns-providers.powerdns ])' --run "POWERDNS_API_KEY="" octodns-dump --config-file=./result --output-dir=/tmp/octodns_dump example.com. config"
 cat /tmp/octodns_dump/example.com.yaml
