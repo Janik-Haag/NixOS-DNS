@@ -388,11 +388,108 @@ lib.mapAttrs
             apply = lib.toList;
           };
         };
+        tlsa = {
+          common = {
+            description = ''
+              Used to bind X.509 certificates to domain names.
+              Can be generated with the `hash-slinger` package:
+
+              ```bash
+              tlsa --create example.com --certificate /path/to/certificate.pem
+              ```
+            '';
+            type =
+              with lib.types;
+              let
+                tlsaSubModule = submodule {
+                  options = {
+                    usage = lib.mkOption {
+                      description = ''
+                        How to verify the certificate.
+                      '';
+                      example = 3;
+                      type = lib.types.int;
+                    };
+                    selector = lib.mkOption {
+                      description = ''
+                        Which part of the certificate should be checked.
+                      '';
+                      example = 0;
+                      type = lib.types.int;
+                    };
+                    matchingType = lib.mkOption {
+                      description = ''
+                        Whether to store the whole certificate in the certificate association data, or a hash of it.
+                      '';
+                      example = 1;
+                      type = lib.types.int;
+                    };
+                    certificateAssociationData = lib.mkOption {
+                      description = ''
+                        The certificate or hash thereof to be matched, in hexadecimal format.
+                      '';
+                      example = "2b03e032ab48fa5cb9d87c2e4ba1dda8ff9933fd1188f80f8508e132527a3801";
+                      type = lib.types.str;
+                    };
+                  };
+                };
+              in
+              nullOr (oneOf [
+                tlsaSubModule
+                (listOf (nullOr tlsaSubModule))
+              ]);
+            apply = lib.toList;
+          };
+        };
+        sshfp = {
+          common = {
+            description = ''
+              Used to bind SSH host keys fingerprints to domain names.
+              Can be generated with the `openssh` package:
+
+              ```bash
+              ssh-keyscan -D example.com
+              ```
+            '';
+            type =
+              with lib.types;
+              let
+                tlsaSubModule = submodule {
+                  options = {
+                    algorithm = lib.mkOption {
+                      description = ''
+                        Algorithm of the SSH host key.
+                      '';
+                      example = 4;
+                      type = lib.types.int;
+                    };
+                    type = lib.mkOption {
+                      description = ''
+                        Algorith used to generate the fingerprint of the SSH host key.
+                      '';
+                      example = 1;
+                      type = lib.types.int;
+                    };
+                    fingerprint = lib.mkOption {
+                      description = ''
+                        Hexadecimal fingerprint of the SSH host key.
+                      '';
+                      example = "035e39adea06bd15c0b4ae06375f36459a5780bc";
+                      type = lib.types.str;
+                    };
+                  };
+                };
+              in
+              nullOr (oneOf [
+                tlsaSubModule
+                (listOf (nullOr tlsaSubModule))
+              ]);
+            apply = lib.toList;
+          };
+        };
         # loc = lib.mkOption { };
         # naptr = lib.mkOption { };
         # ptr = lib.mkOption { };
-        # sshfp = lib.mkOption { };
-        # tlsa = lib.mkOption { };
         # zonemd = lib.mkOption { };
       }
   )

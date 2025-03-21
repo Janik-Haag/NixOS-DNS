@@ -69,11 +69,34 @@
             ttl = 60;
             data = [ "v=spf1 a:mail.aq0.de -all" ];
           };
+          sshfp = {
+            ttl = 60;
+            data = [
+              {
+                algorithm = 4;
+                type = 2;
+                fingerprint = "f4f4ada530e64b5e574ed4459d7a40424179fd03a766282a2c1060010719626f";
+              }
+            ];
+          };
         };
         "*.example.com" = {
           alias = {
             ttl = 60;
             data = [ "example.com" ];
+          };
+        };
+        "_443._tcp.example.com" = {
+          tlsa = {
+            ttl = 3600;
+            data = [
+              {
+                usage = 3;
+                selector = 1;
+                matchingType = 1;
+                certificateAssociationData = "9c4b5e3816504bdf4cbcfcc5c1b41ac18f2def723ec0d8299543e6d06471e610";
+              }
+            ];
           };
         };
         "_ftp._tcp.example.com" = {
@@ -117,6 +140,7 @@
     );
     expected = ''
       *.example.com. IN 60 ALIAS example.com
+      _443._tcp.example.com. IN 3600 TLSA 3 1 1 9c4b5e3816504bdf4cbcfcc5c1b41ac18f2def723ec0d8299543e6d06471e610
       _ftp._tcp.example.com. IN 3600 URI 10 5 ftp://example.com/public
       _xmpp._tcp.example.com. IN 86400 SRV 10 5 5223 xmpp.example.com
       example.com. IN 60 A 198.51.100.42
@@ -127,6 +151,7 @@
       example.com. IN 60 NS ns2.example.com.
       example.com. IN 60 NS ns3.example.org.
       example.com. IN 60 SOA ns.example.invalid. admin.example.invalid. ( 1970010100 7200 3600 1209600 60 )
+      example.com. IN 60 SSHFP 4 2 f4f4ada530e64b5e574ed4459d7a40424179fd03a766282a2c1060010719626f
       example.com. IN 60 TXT "v=spf1 a:mail.aq0.de -all"
       mail.example.com. IN 60 CNAME e-mail.provider.invalid
       redirect.example.com. IN 60 DNAME example.org
