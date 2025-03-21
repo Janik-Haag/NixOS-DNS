@@ -3,6 +3,7 @@
 ## nixos-dns
 
 In the [example/flake.nix](https://github.com/Janik-Haag/nixos-dns/tree/main/example/flake.nix) you will find:
+
 ```nix
   # nix eval .#dnsDebugHost
   dnsDebugHost = nixos-dns.utils.debug.host self.nixosConfigurations.host1;
@@ -22,10 +23,12 @@ You can just copy them in to your own flake and change dnsConfig/host1 to the on
 ## zone files
 
 You can use `named-checkzone` from the `bind` package like:
+
 ```bash
 # named-checkzone zonename zonefile
 named-checkzone example.com result/example.com
 ```
+
 to check the validity of your zone file.
 
 ## octodns config

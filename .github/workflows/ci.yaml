@@ -10,24 +10,17 @@ jobs:
       - uses: nix-community/cache-nix-action@v6
         with:
           primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
-
       - name: "Check evaluation"
         run: nix flake check --no-build --all-systems
-
       - name: "Run unit-tests"
         run: nix run github:nix-community/nix-unit -- --flake .#tests
-
       - name: "Do linting"
         run: nix run nixpkgs#statix -- check .
-
       - name: "Check formatting"
         run: nix fmt -- --fail-on-change
-
       - name: "Try building docs"
         run: nix build .#docs
-
       - name: "Try building example"
         run: nix build --override-input nixos-dns $(pwd)/ ./example#octodns
-
       - name: "Check zonefile with bind"
         run: nix build --override-input nixos-dns $(pwd)/ ./example#zoneFiles && nix shell nixpkgs#bind --command named-checkzone example.com result/example.com

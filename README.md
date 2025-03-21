@@ -12,6 +12,7 @@ What do you get with `NixOS-DNS`:
 ## Quick start
 
 There is a usage example/template with comments in [./example](./example/flake.nix), you can try it out locally by doing:
+
 ```bash
 nix flake init -t github:Janik-Haag/nixos-dns
 ```
@@ -20,6 +21,7 @@ nix flake init -t github:Janik-Haag/nixos-dns
 
 View the docs [here](https://janik-haag.github.io/NixOS-DNS/)
 Or view it locally:
+
 ```bash
 nix build github:Janik-Haag/nixos-dns#docs && xdg-open result/index.html
 ```
@@ -32,9 +34,11 @@ Which got particularly annoying because of context switches between nix and yaml
 But not just that, it also prevented me from using nix's awesome versatility when it comes to dns,
 for example I have a `prometheus-node-exporter.nix` which gets imported by every server in my flake,
 and has a let binding at the top defining:
+
 ```nix
 domain = "${config.networking.hostName}.prometheus.${config.networking.domain}";
 ```
+
 which automatically generates a domain like `myHost1.prometheus.example.com` for every server that imports it.
 There is just a small problem: I now also have to add a entry for every host to my octodns config, which also makes the nixos module less portable.
 So I had the idea of writing a NixOS module that provides domain meta data per host and per module, to automagically generate dns entries from.

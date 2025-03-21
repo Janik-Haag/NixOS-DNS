@@ -46,7 +46,6 @@ You can find the tests in `utils/test-*.nix`
 - remove corresponding unit-tests
 - add breaking changes to `CHANGELOG.md`
 
-
 ## docs
 
 The docs are being built using [mdBook](https://github.com/rust-lang/mdBook), the build process is abstracted away into a nix derivation that outputs a static rendering of the book.
@@ -54,6 +53,7 @@ You can find the book files in `docs/book`, all the files there get copied into 
 While building the book, the deviations `docs/utils.nix` and `docs/modules.nix` also get built which generate the markdown for the utility functions and modules using nixdoc and the modules system builtin documentation system.
 
 You can build the docs locally by doing:
+
 ```bash
 nix build .#docs && xdg-open result/index.html
 ```
