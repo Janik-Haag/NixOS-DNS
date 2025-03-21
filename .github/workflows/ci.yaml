@@ -6,12 +6,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: samueldr/lix-gha-installer-action@latest
+      - uses: nix-community/cache-nix-action@v6
         with:
-          diagnostic-endpoint: ""
-      - uses: DeterminateSystems/magic-nix-cache-action@main
-        with:
-          diagnostic-endpoint: ""
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
 
       - name: "Check evaluation"
         run: nix flake check --no-build --all-systems
