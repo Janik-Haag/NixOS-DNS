@@ -21,8 +21,8 @@ let
   generate = nixos-dns.utils.generate pkgs;
 in {
   dns = generate.octodnsConfig {
-    config = {
-      providers = {
+    providers = {
+      config = {
         hetzner = {
           class = "octodns_hetzner.HetznerProvider";
           token = "env/HETZNER_DNS_API";
