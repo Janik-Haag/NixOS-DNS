@@ -210,10 +210,10 @@ and:
 
 We would get:
 
-| subDomains                     | matches                   |
+| subDomains | matches |
 | ------------------------------ | ------------------------- |
-| `"example.com"`                | `"example.com"`           |
-| `"mydomain.example.com"`       | `"example.com"`           |
+| `"example.com"` | `"example.com"` |
+| `"mydomain.example.com"` | `"example.com"` |
 | `"cats.subdomain.example.com"` | `"subdomain.example.com"` |
 
 And `example.net` just wouldn't get matched, but that's fine since it is a baseDomain, if it were a subDomain it would cause an error.

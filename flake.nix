@@ -61,7 +61,7 @@
             nix-unit
             nixdoc
             statix
-            nixfmt-rfc-style
+            nixfmt
           ];
         };
       });
