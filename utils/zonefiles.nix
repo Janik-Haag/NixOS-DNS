@@ -75,7 +75,7 @@
   mkZoneString =
     # Takes dnsConfig."your-domain.invalid"
     entries:
-    ''${lib.concatLines (
+    "${lib.concatLines (
       lib.flatten (
         lib.mapAttrsToList (
           domainName: domainAttrs:
@@ -88,7 +88,7 @@
           ) domainAttrs
         ) entries
       )
-    )}'';
+    )}";
 
   /*
     Returns a zone-file from NixOS-DNS values

@@ -4,7 +4,7 @@
   pkgs,
   config,
   ...
-# , nixosSystem
+  # , nixosSystem
 }:
 let
   cfg = config.networking.domains;

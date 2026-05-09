@@ -9,7 +9,7 @@ let
     lib.mkOption {
       default = { };
       # this description doesn't get rendered anywhere so we can just leave it empty
-      description = '''';
+      description = "";
       type = lib.types.submodule {
         options = {
           ttl = lib.mkOption {
@@ -263,7 +263,7 @@ lib.mapAttrs
                       type = lib.types.int;
                     };
                     ttl = lib.mkOption {
-                      description = '''';
+                      description = "";
                       default = cfg.defaultTTL;
                       defaultText = lib.literalExpression "cfg.defaultTTL";
                       example = "";
