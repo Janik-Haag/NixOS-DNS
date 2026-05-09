@@ -3,13 +3,7 @@
   utils,
   pkgs,
 }:
-# docs = pkgs.callPackage ./docs.nix { };
 let
-  # can be removed once https://github.com/rust-lang/mdBook/pull/2262 lands
-  highlight = pkgs.fetchurl {
-    url = "https://raw.githubusercontent.com/rust-lang/mdBook/7b9bd5049ce15ae5f301d5a40c50ce8359d9e9a8/src/theme/highlight.js";
-    hash = "sha256-pLP73zlmGkbC/zV6bwnB6ijRf9gVkj5/VYMGLhiQ1/Q=";
-  };
   format = pkgs.formats.toml { };
   prepareDocs = pkgs.runCommand "book" { } ''
     mkdir -p $out
@@ -21,7 +15,6 @@ let
     book = {
       authors = [ "Janik H." ];
       language = "en";
-      multilingual = false;
       src = "${prepareDocs}";
       title = "NixOS-DNS";
     };
@@ -31,7 +24,6 @@ pkgs.runCommand "docs" { } ''
   mkdir -p $out
 
   mkdir -p ./theme
-  ln -s ${highlight} ./theme/highlight.js
   ln -s ${book} ./book.toml
   ${lib.getExe' pkgs.mdbook "mdbook"} build
 
