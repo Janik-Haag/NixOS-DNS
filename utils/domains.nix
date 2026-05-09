@@ -202,7 +202,7 @@
     let
       baseDomains =
         lib.attrNames
-          (lib.fold (l: r: lib.recursiveUpdate l r) { } (
+          (lib.foldr (l: r: lib.recursiveUpdate l r) { } (
             lib.filter (
               a:
               lib.hasAttrByPath [
@@ -228,7 +228,7 @@
         )
         subDomains
         ;
-      reducedBaseDomains = lib.fold (
+      reducedBaseDomains = lib.foldr (
         domain: acc:
         acc
         ++ (
@@ -240,7 +240,7 @@
       ) [ ] baseDomains;
       subDomainKeys = lib.attrNames subDomains;
     in
-    lib.fold (
+    lib.foldr (
       attr: acc:
       lib.recursiveUpdate acc {
         ${(utils.domains.getMostSpecific attr reducedBaseDomains)}.${attr} = subDomains.${attr};
