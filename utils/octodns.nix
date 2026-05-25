@@ -1,6 +1,26 @@
 { lib, utils }:
 {
   /*
+    Returns octoDNS record metadata for fields that are not representable in a
+    BIND zonefile source. Native octoDNS renderers can merge this into each
+    record value.
+
+    Type:
+      utils.octodns.recordMetadata :: Attr -> Attr
+  */
+  recordMetadata =
+    record:
+    (if record.ttlAuto or false then { } else { inherit (record) ttl; })
+    // (
+      if record.proxied or false then
+        {
+          octodns.cloudflare.proxied = true;
+        }
+      else
+        { }
+    );
+
+  /*
     Just adds a dummy SOA record.
     It won't actually be used by anything.
     But the octodns bind module has a check for the validity of a zone-file

@@ -4,12 +4,66 @@
   cfg,
 }:
 let
+  proxiableRecordTypes = [
+    "a"
+    "aaaa"
+    "alias"
+    "cname"
+  ];
+  isProxiable = recordType: builtins.elem recordType proxiableRecordTypes;
+  mkRecordOptions = recordType: {
+    comment = lib.mkOption {
+      description = ''
+        Optional provider-side comment for this record. The Cloudflare backend
+        honors this; zonefile output renders it as a BIND comment.
+      '';
+      default = null;
+      type = lib.types.nullOr lib.types.str;
+    };
+    ttlAuto = lib.mkOption {
+      description = ''
+        Use the DNS provider's automatic TTL handling instead of rendering an
+        explicit TTL value.
+      '';
+      default = false;
+      type = lib.types.bool;
+    };
+    proxied = lib.mkOption {
+      description = ''
+        Whether supported providers should proxy this record. This is valid only
+        for A, AAAA, CNAME, and ALIAS records.
+      '';
+      default = false;
+      type = lib.types.bool;
+    };
+  };
+  checkRecord =
+    recordType: defaultTTL: record:
+    let
+      cleanedRecord = builtins.removeAttrs record (
+        (lib.optional (record.comment == null) "comment")
+        ++ (lib.optional (!record.ttlAuto) "ttlAuto")
+        ++ (lib.optional (!record.proxied) "proxied")
+      );
+    in
+    lib.throwIf (record.comment != null && builtins.stringLength record.comment > 100)
+      "record comments must be at most 100 characters"
+      (
+        lib.throwIf (record.ttlAuto && record.ttl != defaultTTL)
+          "ttlAuto cannot be used together with an explicit ttl"
+          (
+            lib.throwIf (
+              record.proxied && !(isProxiable recordType)
+            ) "proxied is only valid on A, AAAA, CNAME, ALIAS" cleanedRecord
+          )
+      );
   mkRecord =
-    defaultTTL: data:
+    recordType: defaultTTL: data:
     lib.mkOption {
       default = { };
       # this description doesn't get rendered anywhere so we can just leave it empty
       description = "";
+      apply = checkRecord recordType defaultTTL;
       type = lib.types.submodule {
         options = {
           ttl = lib.mkOption {
@@ -24,14 +78,16 @@ let
             defaultText = lib.literalExpression "Automatically use the same ttl as the matching base domain";
           };
           inherit data;
-        };
+        }
+        // mkRecordOptions recordType;
       };
     };
   mkBaseRecord =
-    recordType: options: mkRecord cfg.defaultTTL (lib.mkOption { default = null; } // options);
+    recordType: options:
+    mkRecord recordType cfg.defaultTTL (lib.mkOption { default = null; } // options);
   mkSubRecord =
     recordType: options: domainName:
-    mkRecord (utils.domains.mapBaseToSub domainName cfg.baseDomains recordType).ttl (
+    mkRecord recordType (utils.domains.mapBaseToSub domainName cfg.baseDomains recordType).ttl (
       lib.mkOption {
         default = (utils.domains.mapBaseToSub domainName cfg.baseDomains recordType).data;
         defaultText = lib.literalExpression "Automatically use the same record as the matching base domain";

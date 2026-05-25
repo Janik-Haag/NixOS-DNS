@@ -43,6 +43,27 @@
     };
   };
 
+  testRecordMetadataProxied = {
+    expr = utils.octodns.recordMetadata {
+      ttl = 300;
+      data = [ "198.51.100.42" ];
+      proxied = true;
+    };
+    expected = {
+      ttl = 300;
+      octodns.cloudflare.proxied = true;
+    };
+  };
+
+  testRecordMetadataTtlAutoOmitsTtl = {
+    expr = utils.octodns.recordMetadata {
+      ttl = 300;
+      ttlAuto = true;
+      data = [ "198.51.100.42" ];
+    };
+    expected = { };
+  };
+
   testFakeSOA = {
     expr = utils.octodns.fakeSOA {
       "example.com" = {

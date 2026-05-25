@@ -22,10 +22,18 @@
           ];
         };
         txt = {
+          comment = "Public policy records for the zone apex";
           data = [
             "meow"
             "v=spf1 a:mail.example.com -all"
           ];
+        };
+        mx = {
+          ttlAuto = true;
+          data = {
+            exchange = "mail.example.com";
+            preference = 10;
+          };
         };
       };
       "mail._domainkey".txt.data =
@@ -36,6 +44,7 @@
         a = {
           data = [ "203.0.113.73" ];
           ttl = 60;
+          proxied = true;
         };
       };
     };

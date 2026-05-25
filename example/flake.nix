@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixos-dns.url = "github:Janik-Haag/nixos-dns";
+    nixos-dns.url = "path:..";
     nixos-dns.inputs.nixpkgs.follows = "nixpkgs";
   };
 

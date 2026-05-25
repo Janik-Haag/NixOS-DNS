@@ -66,6 +66,33 @@
       "SSHFP ${builtins.toString value.algorithm} ${builtins.toString value.type} ${value.fingerprint}"
     else
       "${lib.toUpper record} ${value}";
+
+  /*
+    Render the owner, TTL policy, and record payload for one DNS value.
+
+    Type:
+      utils.zonefiles.formatRecordLine :: String -> Attr -> String -> Any -> String
+  */
+  formatRecordLine =
+    domainName: record: recordType: val:
+    let
+      ttl = if record.ttlAuto or false then "" else " ${builtins.toString record.ttl}";
+    in
+    "${domainName}. IN${ttl} ${utils.zonefiles.convertRecordToStr recordType val}";
+
+  /*
+    Render an optional BIND comment followed by the record line.
+
+    Type:
+      utils.zonefiles.formatRecord :: String -> Attr -> String -> Any -> String
+  */
+  formatRecord =
+    domainName: record: recordType: val:
+    let
+      line = utils.zonefiles.formatRecordLine domainName record recordType val;
+    in
+    if (record.comment or null) != null then "; ${record.comment}\n${line}" else line;
+
   /*
     Converts a zone attributeset into a zonefile and returns a multiline string
 
@@ -81,10 +108,7 @@
           domainName: domainAttrs:
           lib.mapAttrsToList (
             recordType: record:
-            (builtins.map (
-              val:
-              "${domainName}. IN ${builtins.toString record.ttl} ${utils.zonefiles.convertRecordToStr recordType val}"
-            ) record.data)
+            (builtins.map (val: utils.zonefiles.formatRecord domainName record recordType val) record.data)
           ) domainAttrs
         ) entries
       )

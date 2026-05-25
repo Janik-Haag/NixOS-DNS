@@ -142,6 +142,12 @@ You might notice the `.data` behind any record, this is because you might want t
 As you can see above the `.ttl` isn't specifically added to every record, this is because there is `networking.domains.defaultTTL`
 So every `record` has two fields `ttl` and `data`, the data type differs based on the record, for more info please refer to the module docs.
 
+Records also accept Cloudflare-friendly metadata fields:
+
+- `comment`: optional string up to 100 characters. Zonefile output renders it as a BIND comment above the record; Cloudflare backends can send it as the provider-side record comment.
+- `ttlAuto`: optional boolean, default `false`. When `true`, zonefile output omits the explicit TTL so the zone default applies; provider backends can translate it to their automatic TTL representation.
+- `proxied`: optional boolean, default `false`. This is valid only on `A`, `AAAA`, `CNAME`, and `ALIAS` records. octoDNS metadata helpers render it as `octodns.cloudflare.proxied = true` for Cloudflare-aware consumers.
+
 And inside of a module you would do something like:
 
 ```nix

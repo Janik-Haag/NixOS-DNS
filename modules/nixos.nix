@@ -9,6 +9,15 @@
 let
   cfg = config.networking.domains;
   records = import ./records.nix { inherit lib utils cfg; };
+  isEmptyRecord =
+    v:
+    builtins.isAttrs v
+    && v ? data
+    && ((v.data or null) == null || (v.data or null) == [ null ])
+    && (v.ttl or cfg.defaultTTL) == cfg.defaultTTL
+    && (v.comment or null) == null
+    && !(v.ttlAuto or false)
+    && !(v.proxied or false);
 in
 {
   options = {
@@ -29,20 +38,7 @@ in
           Attribute set of subdomains that inherit values from their matching domain.
         '';
         default = { };
-        apply = lib.filterAttrsRecursive (
-          n: v:
-          cfg.enable
-          &&
-            v != {
-              data = null;
-              ttl = cfg.defaultTTL;
-            }
-          &&
-            v != {
-              data = [ null ];
-              ttl = cfg.defaultTTL;
-            }
-        );
+        apply = lib.filterAttrsRecursive (n: v: cfg.enable && !(isEmptyRecord v));
         type = attrsOf (
           submodule (
             { name, ... }:
