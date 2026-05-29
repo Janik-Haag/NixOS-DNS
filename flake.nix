@@ -20,6 +20,17 @@
     let
       eachSystem = f: nixpkgs.lib.genAttrs (import systems) (system: f nixpkgs.legacyPackages.${system});
       treefmtEval = eachSystem (pkgs: treefmt-nix.lib.evalModule pkgs ./treefmt.nix);
+      checkedTests = builtins.deepSeq (nixpkgs.lib.mapAttrsRecursiveCond
+        (value: !(builtins.isAttrs value && value ? expr && value ? expected))
+        (
+          path: test:
+          if test.expr == test.expected then
+            true
+          else
+            throw "test ${nixpkgs.lib.concatStringsSep "." path} failed"
+        )
+        self.tests
+      ) true;
     in
     {
       nixosModules = rec {
@@ -71,6 +82,17 @@
           inherit (pkgs) lib;
           inherit pkgs;
         };
+      });
+      checks = eachSystem (pkgs: {
+        tests = pkgs.runCommand "nixos-dns-tests" { } ''
+          ${if checkedTests then "true" else "false"}
+          touch $out
+        '';
+        treefmt = treefmtEval.${pkgs.system}.config.build.check self;
+        statix = pkgs.runCommand "nixos-dns-statix" { nativeBuildInputs = [ pkgs.statix ]; } ''
+          statix check ${self}
+          touch $out
+        '';
       });
       formatter = eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
       templates = {
