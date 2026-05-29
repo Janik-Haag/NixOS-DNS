@@ -20,34 +20,6 @@
     let
       eachSystem = f: nixpkgs.lib.genAttrs (import systems) (system: f nixpkgs.legacyPackages.${system});
       treefmtEval = eachSystem (pkgs: treefmt-nix.lib.evalModule pkgs ./treefmt.nix);
-      testFiles = nixpkgs.lib.filterAttrs (
-        name: type: type == "regular" && nixpkgs.lib.hasSuffix ".nix" name
-      ) (builtins.readDir ./utils/tests);
-      testSuites = nixpkgs.lib.mapAttrs' (
-        name: _:
-        let
-          testFile = import "${./utils}/tests/${name}";
-          args = {
-            inherit self;
-            inherit (nixpkgs) lib;
-            inherit (self) utils;
-          };
-        in
-        nixpkgs.lib.nameValuePair (nixpkgs.lib.removeSuffix ".nix" name) (
-          testFile (builtins.intersectAttrs (builtins.functionArgs testFile) args)
-        )
-      ) testFiles;
-      checkedTests = builtins.deepSeq (nixpkgs.lib.mapAttrsRecursiveCond
-        (value: !(builtins.isAttrs value && value ? expr && value ? expected))
-        (
-          path: test:
-          if test.expr == test.expected then
-            true
-          else
-            throw "test ${nixpkgs.lib.concatStringsSep "." path} failed"
-        )
-        testSuites
-      ) true;
     in
     {
       nixosModules = rec {
@@ -63,7 +35,23 @@
           inherit (self) utils;
         };
       # __unfix__ and extend are filtered because of the fix point stuff. generate is filtered because it needs special architecture dependent treatment.
-      tests = testSuites;
+      tests =
+        nixpkgs.lib.mapAttrs
+          (
+            name: v:
+            import "${./utils}/tests/${name}.nix" {
+              inherit self;
+              inherit (nixpkgs) lib;
+              inherit (self) utils;
+            }
+          )
+          (
+            builtins.removeAttrs self.utils [
+              "__unfix__"
+              "extend"
+              "generate"
+            ]
+          );
       devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {
           buildInputs = with pkgs; [
@@ -83,10 +71,6 @@
           inherit (pkgs) lib;
           inherit pkgs;
         };
-        tests = pkgs.runCommand "nixos-dns-tests" { } ''
-          ${if checkedTests then "true" else "false"}
-          touch $out
-        '';
       });
       formatter = eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
       templates = {

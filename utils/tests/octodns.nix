@@ -55,13 +55,37 @@
     };
   };
 
+  testRecordMetadataComment = {
+    expr = utils.octodns.recordMetadata {
+      ttl = 300;
+      data = [ "198.51.100.42" ];
+      comment = "front door";
+    };
+    expected = {
+      ttl = 300;
+      octodns.cloudflare.comment = "front door";
+    };
+  };
+
   testRecordMetadataTtlAutoOmitsTtl = {
     expr = utils.octodns.recordMetadata {
       ttl = 300;
       ttlAuto = true;
       data = [ "198.51.100.42" ];
     };
-    expected = { };
+    expected = {
+      octodns.cloudflare."auto-ttl" = true;
+    };
+  };
+
+  testRecordMetadataDefaultOnly = {
+    expr = utils.octodns.recordMetadata {
+      ttl = 300;
+      data = [ "198.51.100.42" ];
+    };
+    expected = {
+      ttl = 300;
+    };
   };
 
   testFakeSOA = {

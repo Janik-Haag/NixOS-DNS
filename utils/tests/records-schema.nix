@@ -34,6 +34,19 @@ in
     expected = false;
   };
 
+  testProxiedWithExplicitTtlFails = {
+    expr =
+      (evalExtraConfig {
+        defaultTTL = 86400;
+        zones."example.com"."".a = {
+          data = "198.51.100.42";
+          ttl = 300;
+          proxied = true;
+        };
+      }).success;
+    expected = false;
+  };
+
   testCommentLongerThan100Fails = {
     expr =
       (evalExtraConfig {
@@ -65,6 +78,33 @@ in
         comment = "front door";
         proxied = true;
         ttlAuto = true;
+      };
+    };
+  };
+
+  testUriTargetAcceptsString = {
+    expr = utils.domains.getDnsConfig {
+      extraConfig = {
+        defaultTTL = 300;
+        zones."example.com"."_ftp._tcp".uri = {
+          data = {
+            priority = 10;
+            weight = 1;
+            target = "ftp://example.com/public";
+          };
+        };
+      };
+    };
+    expected = {
+      "example.com"."_ftp._tcp.example.com".uri = {
+        data = [
+          {
+            priority = 10;
+            target = "ftp://example.com/public";
+            weight = 1;
+          }
+        ];
+        ttl = 300;
       };
     };
   };

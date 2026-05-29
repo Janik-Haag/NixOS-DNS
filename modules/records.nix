@@ -52,9 +52,13 @@ let
         lib.throwIf (record.ttlAuto && record.ttl != defaultTTL)
           "ttlAuto cannot be used together with an explicit ttl"
           (
-            lib.throwIf (
-              record.proxied && !(isProxiable recordType)
-            ) "proxied is only valid on A, AAAA, CNAME, ALIAS" cleanedRecord
+            lib.throwIf (record.proxied && !record.ttlAuto && record.ttl != defaultTTL)
+              "proxied records cannot be used together with an explicit ttl"
+              (
+                lib.throwIf (
+                  record.proxied && !(isProxiable recordType)
+                ) "proxied is only valid on A, AAAA, CNAME, ALIAS" cleanedRecord
+              )
           )
       );
   mkRecord =
@@ -432,7 +436,7 @@ lib.mapAttrs
                         The URI of the target, where the URI is as specified in RFC 3986
                       '';
                       example = "ftp://example.com/public";
-                      type = lib.types.int;
+                      type = lib.types.str;
                     };
                   };
                 };

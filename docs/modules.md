@@ -13,4 +13,6 @@ backends to use provider automatic TTL handling; zonefile output omits the TTL.
 
 `proxied` is available for provider proxying and is valid only on `A`, `AAAA`,
 `CNAME`, and `ALIAS` records. octoDNS metadata helpers render it as
-`octodns.cloudflare.proxied = true` for Cloudflare-aware consumers.
+`octodns.cloudflare.proxied = true` for Cloudflare-aware consumers. Proxied
+records cannot set a non-default explicit TTL; use `ttlAuto` for provider
+automatic TTL handling.

@@ -10,15 +10,14 @@
   */
   recordMetadata =
     record:
-    (if record.ttlAuto or false then { } else { inherit (record) ttl; })
-    // (
-      if record.proxied or false then
-        {
-          octodns.cloudflare.proxied = true;
-        }
-      else
-        { }
-    );
+    let
+      cloudflareMetadata =
+        (lib.optionalAttrs (record.proxied or false) { proxied = true; })
+        // (lib.optionalAttrs (record.ttlAuto or false) { "auto-ttl" = true; })
+        // (lib.optionalAttrs ((record.comment or null) != null) { inherit (record) comment; });
+    in
+    (lib.optionalAttrs (!(record.ttlAuto or false)) { inherit (record) ttl; })
+    // (lib.optionalAttrs (cloudflareMetadata != { }) { octodns.cloudflare = cloudflareMetadata; });
 
   /*
     Just adds a dummy SOA record.

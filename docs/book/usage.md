@@ -146,7 +146,7 @@ Records also accept Cloudflare-friendly metadata fields:
 
 - `comment`: optional string up to 100 characters. Zonefile output renders it as a BIND comment above the record; Cloudflare backends can send it as the provider-side record comment.
 - `ttlAuto`: optional boolean, default `false`. When `true`, zonefile output omits the explicit TTL so the zone default applies; provider backends can translate it to their automatic TTL representation.
-- `proxied`: optional boolean, default `false`. This is valid only on `A`, `AAAA`, `CNAME`, and `ALIAS` records. octoDNS metadata helpers render it as `octodns.cloudflare.proxied = true` for Cloudflare-aware consumers.
+- `proxied`: optional boolean, default `false`. This is valid only on `A`, `AAAA`, `CNAME`, and `ALIAS` records. octoDNS metadata helpers render it as `octodns.cloudflare.proxied = true` for Cloudflare-aware consumers. Proxied records cannot set a non-default explicit TTL; use `ttlAuto` for provider automatic TTL handling.
 
 And inside of a module you would do something like:
 

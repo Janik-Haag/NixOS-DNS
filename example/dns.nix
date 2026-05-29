@@ -43,7 +43,7 @@
       "" = {
         a = {
           data = [ "203.0.113.73" ];
-          ttl = 60;
+          ttlAuto = true;
           proxied = true;
         };
       };

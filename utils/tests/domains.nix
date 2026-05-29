@@ -3,6 +3,9 @@
   lib,
   utils,
 }:
+let
+  schemaTests = import ./records-schema.nix { inherit self lib utils; };
+in
 {
   testGetDomainPartsString = {
     expr = utils.domains.getParts "my.example.com";
@@ -297,3 +300,4 @@
     };
   };
 }
+// schemaTests
